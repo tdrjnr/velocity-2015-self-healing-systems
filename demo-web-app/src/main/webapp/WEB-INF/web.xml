@@ -14,4 +14,13 @@
     <url-pattern>/LeakMemory</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>LogErrors</servlet-name>
+    <servlet-class>com.velocityconf.selfhealingsystems.demowebapp.LogErrorsServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LogErrors</servlet-name>
+    <url-pattern>/LogErrors</url-pattern>
+  </servlet-mapping>
+
 </web-app>
