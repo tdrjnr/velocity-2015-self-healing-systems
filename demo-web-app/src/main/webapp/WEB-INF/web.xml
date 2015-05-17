@@ -3,5 +3,15 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+  <display-name>Velocity 2015 Self Healing Systems Demo App</display-name>
+
+  <servlet>
+    <servlet-name>LeakMemory</servlet-name>
+    <servlet-class>com.velocityconf.selfhealingsystems.demowebapp.LeakMemoryServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LeakMemory</servlet-name>
+    <url-pattern>/LeakMemory</url-pattern>
+  </servlet-mapping>
+
 </web-app>
