@@ -2,18 +2,30 @@ var dynect = require('./dynect_api.js');
 
 var debug = true;
 
+exports.sns_handler = function(event, context) {
+	debug_log(JSON.stringify(event, null, 2));
+
+	event.Records.forEach(function(record) {
+		var payload = record.Sns.Message;
+		lambda_handler(payload, context);
+	});
+}
+
 exports.kinesis_handler = function(event, context) {
 	debug_log(JSON.stringify(event, null, 2));
 
 	event.Records.forEach(function(record) {
 		// Kinesis data is base64 encoded so decode here
 		var payload = new Buffer(record.kinesis.data, 'base64').toString('ascii');
-		debug_log('Decoded payload:' + payload);
-
-		var args = JSON.parse(payload);
-
-		set_address_enabled(args, context);
+		lambda_handler(payload, context);
 	});
+}
+
+lambda_handler = function(payload, context) {
+	debug_log('Payload:' + payload);
+
+	var args = JSON.parse(payload);
+	set_address_enabled(args, context);
 }
 
 set_address_enabled = function(args, context) {
@@ -58,7 +70,7 @@ set_address_enabled = function(args, context) {
 
 				dynect.update_dsf_record(token, service_id, record_id, updated_record, function(dsf_record) {
 					debug_log("Success!");
-					context.succeeded();
+					context.succeed();
 				});
 			});
 		});
