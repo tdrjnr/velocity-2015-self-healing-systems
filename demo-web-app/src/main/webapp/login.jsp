@@ -16,18 +16,25 @@ boolean failedLogin = false;
 
 if (userName != null && password != null)
 {
+  // TODO:
+  // Insert actual authentication code here.
   failedLogin = !password.equals("velocity2015");
 
   if (failedLogin)
   {
-    ConcurrentMap<String, AtomicInteger> failedAttemptCounts = (ConcurrentMap<String, AtomicInteger>)session.getAttribute("failedAttemptsMap");
+    // This lengthy block of code tracks the number of failed login attempts for each user.
+    // Even though it's a demo app, I tried to be a "good citizen" and use proper thread-safety.
 
+    ConcurrentMap<String, AtomicInteger> failedAttemptCounts = (ConcurrentMap<String, AtomicInteger>)application.getAttribute("failedAttemptsMap");
+
+    // If this is the first failed login attempt, create the "tracking" map.
     if (failedAttemptCounts == null)
     {
       failedAttemptCounts = new ConcurrentHashMap<String, AtomicInteger>();
-      session.setAttribute("failedAttemptsMap", failedAttemptCounts);
+      application.setAttribute("failedAttemptsMap", failedAttemptCounts);
     }
 
+    // Get the counter for this user, in a thread-safe manner.
     AtomicInteger count = new AtomicInteger();
     AtomicInteger prev = failedAttemptCounts.putIfAbsent(userName, count);
     if (prev != null)
@@ -35,6 +42,7 @@ if (userName != null && password != null)
       count = prev;
     }
 
+    // Increment the counter and get the new value.
     int failedAttempts = count.incrementAndGet();
 
     log.error("User " + userName + " has failed to log in " + failedAttempts + " time(s).");
