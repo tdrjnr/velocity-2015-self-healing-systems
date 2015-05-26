@@ -27,6 +27,9 @@ public class ContextListener implements ServletContextListener
     uploadScheduler = new UploadScheduler();
     uploadScheduler.start(uploadPeriod);
 
+    // Keep a reference to the uploader, so we can simulate stopping it later.
+    context.setAttribute("uploadScheduler", uploadScheduler);
+
     log.info("Application initialized.");
   }
 

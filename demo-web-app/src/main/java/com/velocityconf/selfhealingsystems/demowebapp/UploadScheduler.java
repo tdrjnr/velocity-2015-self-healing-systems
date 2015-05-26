@@ -16,6 +16,12 @@ public class UploadScheduler
     executor.scheduleAtFixedRate(new UploadTask(), period, period, TimeUnit.SECONDS);
   }
 
+  public void stop()
+  {
+    // Don't log anything, because the whole point of this demo is to simulate something mysteriously stopping with no explanation.
+    executor.shutdown();
+  }
+
   private static class UploadTask implements Runnable
   {
     private Log log = LogFactory.getLog(getClass());
