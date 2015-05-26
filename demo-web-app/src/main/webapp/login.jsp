@@ -25,14 +25,8 @@ if (userName != null && password != null)
     // This lengthy block of code tracks the number of failed login attempts for each user.
     // Even though it's a demo app, I tried to be a "good citizen" and use proper thread-safety.
 
+    // Get the "tracking map" (see the ContextListener class for initialization).
     ConcurrentMap<String, AtomicInteger> failedAttemptCounts = (ConcurrentMap<String, AtomicInteger>)application.getAttribute("failedAttemptsMap");
-
-    // If this is the first failed login attempt, create the "tracking" map.
-    if (failedAttemptCounts == null)
-    {
-      failedAttemptCounts = new ConcurrentHashMap<String, AtomicInteger>();
-      application.setAttribute("failedAttemptsMap", failedAttemptCounts);
-    }
 
     // Get the counter for this user, in a thread-safe manner.
     AtomicInteger count = new AtomicInteger();
