@@ -11,12 +11,21 @@ import org.apache.commons.logging.LogFactory;
 public class ContextListener implements ServletContextListener
 {
   private Log log = LogFactory.getLog(getClass());
+  private UploadScheduler uploadScheduler;
 
   @Override
   public void contextInitialized(ServletContextEvent event)
   {
+    ServletContext context = event.getServletContext();
+
+    // Initialize the "failed login attempts" map, used in login.jsp.
     ConcurrentHashMap<String, AtomicInteger> failedAttemptCounts = new ConcurrentHashMap<>();
-    event.getServletContext().setAttribute("failedAttemptsMap", failedAttemptCounts);
+    context.setAttribute("failedAttemptsMap", failedAttemptCounts);
+
+    // Start the simulated file uploader.
+    int uploadPeriod = Integer.parseInt(context.getInitParameter("uploadPeriod"));
+    uploadScheduler = new UploadScheduler();
+    uploadScheduler.start(uploadPeriod);
 
     log.info("Application initialized.");
   }

@@ -5,6 +5,11 @@
 <web-app>
   <display-name>Velocity 2015 Self Healing Systems Demo App</display-name>
 
+  <context-param>
+    <param-name>uploadPeriod</param-name>
+    <param-value>15</param-value>
+  </context-param>
+
   <listener>
     <listener-class>com.velocityconf.selfhealingsystems.demowebapp.ContextListener</listener-class>
   </listener>
