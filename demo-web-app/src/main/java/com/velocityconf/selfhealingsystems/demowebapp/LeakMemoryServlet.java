@@ -19,7 +19,7 @@ public class LeakMemoryServlet extends HttpServlet
     String delayBetweenBlocksParam = request.getParameter("delayBetweenBlocks");
 
     // Example usage:
-    // http://localhost:8080/demo-web-app/LeakMemory?blockCount=5&blockSize=1000000000&delayBetweenBlocks=500
+    // http://localhost:8080/shs-demo-app/LeakMemory?blockCount=5&blockSize=1000000000&delayBetweenBlocks=500
 
     int blockCount = 128;
     int blockSize = 1024;
