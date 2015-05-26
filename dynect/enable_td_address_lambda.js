@@ -61,8 +61,7 @@ exports.cloudwatch_alarm_sns_handler = function(event, context) {
 
 				// Nothing else we can do.  Report the failure to Lambda.
 				context.fail(error);
-			}
-			else {
+			} else {
 				// EC2 API call succeeded.
 
 				// Extract the public IP address from the response.
@@ -81,10 +80,25 @@ exports.cloudwatch_alarm_sns_handler = function(event, context) {
 					"enabled": instance_up
 				};
 
-				// Do it!
+				// Issue the DynECT "disable address" request.
 				set_address_enabled(args, function() {
-					// Success!
-					context.succeed();
+					// DynECT API call succeeded.
+
+					// Finally, re-start the EC2 instance.
+					new AWS.EC2().rebootInstances({ InstanceIds: [ instance_id ] }, function(error, data) {
+						if (error) {
+							// EC2 API call failed.
+							debug_log(error);
+
+							// Nothing else we can do.  Report the failure to Lambda.
+							context.fail(error);
+						} else {
+							// EC2 API call succeeded.
+
+							// We're done!
+							context.succeed();
+						}
+					});
 				});
 			}
 		});
