@@ -1,7 +1,6 @@
 package com.velocityconf.selfhealingsystems.demowebapp;
 
 import java.io.*;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -14,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class LeakMemoryServlet extends HttpServlet
 {
-  private static final List<SoftReference<byte[]>> leakedObjects = new ArrayList<>();
+  private static final List<byte[]> leakedObjects = new ArrayList<>();
   private static final AtomicLong leakedByteCount = new AtomicLong();
 
   private Log log = LogFactory.getLog(getClass());
@@ -64,7 +63,7 @@ public class LeakMemoryServlet extends HttpServlet
 
       for (int i = 0; i < blockCount; i++)
       {
-        leakedObjects.add(new SoftReference(new byte[blockSize]));
+        leakedObjects.add(new byte[blockSize]);
         leakedByteCount.addAndGet((long)blockSize);
 
         response.getWriter().println("Just leaked " + blockSize + " bytes. " + (blockCount - i - 1) + " block(s) remaining. Will sleep for " + delayBetweenBlocks + " ms...");
