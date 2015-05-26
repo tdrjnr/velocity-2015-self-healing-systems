@@ -40,7 +40,7 @@ exports.cloudwatch_alarm_sns_handler = function(event, context) {
 		var alarm = JSON.parse(payload);
 
 		// Extract the instance status.  ALARM means it's down, OK means it's up.
-		var instance_up = (alarm.NewStateValue === "ALARM" ? "false" : "true");
+		var instance_up = alarm.NewStateValue !== "ALARM";
 
 		var instance_id;
 		var instance_public_ip_address;
@@ -84,21 +84,30 @@ exports.cloudwatch_alarm_sns_handler = function(event, context) {
 				set_address_enabled(args, function() {
 					// DynECT API call succeeded.
 
-					// Finally, re-start the EC2 instance.
-					new AWS.EC2().rebootInstances({ InstanceIds: [ instance_id ] }, function(error, data) {
-						if (error) {
-							// EC2 API call failed.
-							debug_log(error);
+					// Finally, if we got alerted because the instance is down, re-boot it.
+					// Once the re-boot finishes, we're hoping it will be in an OK state again,
+					// and we'll get called to re-enable the DynECT record.
+					if (instance_up) {
+						// We're done!
+						debug_log("No re-boot required.");
+						context.succeed();
+					} else {
+						debug_log("Re-booting instance " + instance_id);
+						new AWS.EC2().rebootInstances({ InstanceIds: [ instance_id ] }, function(error, data) {
+							if (error) {
+								// EC2 API call failed.
+								debug_log(error);
 
-							// Nothing else we can do.  Report the failure to Lambda.
-							context.fail(error);
-						} else {
-							// EC2 API call succeeded.
+								// Nothing else we can do.  Report the failure to Lambda.
+								context.fail(error);
+							} else {
+								// EC2 API call succeeded.
 
-							// We're done!
-							context.succeed();
-						}
-					});
+								// We're done!
+								context.succeed();
+							}
+						});
+					}
 				});
 			}
 		});
@@ -133,7 +142,7 @@ set_address_enabled = function(args, callback) {
 
 				var updated_record;
 
-				if (enabled === "true") {
+				if (enabled) {
 					updated_record = {
 						"automation": "auto",
 						"eligible": "true"
