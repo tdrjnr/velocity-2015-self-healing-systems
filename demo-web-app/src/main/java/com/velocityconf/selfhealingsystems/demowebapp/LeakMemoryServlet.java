@@ -52,13 +52,16 @@ public class LeakMemoryServlet extends HttpServlet
       response.getWriter().println("<br />");
       response.getWriter().flush();
 
-      try
+      if (delayBetweenBlocks > 0)
       {
-        Thread.sleep(delayBetweenBlocks);
-      }
-      catch (InterruptedException e)
-      {
-        // For demo purposes, no need to handle this.
+        try
+        {
+          Thread.sleep(delayBetweenBlocks);
+        }
+        catch (InterruptedException e)
+        {
+          // For demo purposes, no need to handle this.
+        }
       }
     }
 
